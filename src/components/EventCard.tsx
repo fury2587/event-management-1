@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Users } from "lucide-react";
 
 interface EventCardProps {
   title: string;

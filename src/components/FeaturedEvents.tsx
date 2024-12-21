@@ -13,6 +13,7 @@ const SAMPLE_EVENTS = [
     category: "Technology",
     capacity: 500,
     registered: 450,
+    waitlist: [],
   },
   {
     id: 2,
@@ -23,6 +24,7 @@ const SAMPLE_EVENTS = [
     category: "Music",
     capacity: 1000,
     registered: 750,
+    waitlist: [],
   },
   {
     id: 3,
@@ -33,6 +35,7 @@ const SAMPLE_EVENTS = [
     category: "Food",
     capacity: 300,
     registered: 290,
+    waitlist: [],
   },
   {
     id: 4,
@@ -43,6 +46,7 @@ const SAMPLE_EVENTS = [
     category: "Workshop",
     capacity: 50,
     registered: 45,
+    waitlist: [],
   },
   {
     id: 5,
@@ -53,6 +57,7 @@ const SAMPLE_EVENTS = [
     category: "Business",
     capacity: 200,
     registered: 180,
+    waitlist: [],
   }
 ];
 
@@ -61,23 +66,51 @@ const CATEGORIES = Array.from(new Set(SAMPLE_EVENTS.map(event => event.category)
 export const FeaturedEvents = () => {
   const { toast } = useToast();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [events, setEvents] = useState(SAMPLE_EVENTS);
 
   const filteredEvents = selectedCategory
-    ? SAMPLE_EVENTS.filter(event => event.category === selectedCategory)
-    : SAMPLE_EVENTS;
+    ? events.filter(event => event.category === selectedCategory)
+    : events;
 
   const handleEventClick = (id: number) => {
-    const event = SAMPLE_EVENTS.find(e => e.id === id);
-    if (event && event.registered >= event.capacity) {
+    const event = events.find(e => e.id === id);
+    if (!event) return;
+
+    if (event.registered >= event.capacity) {
+      // Add to waitlist
+      const updatedEvents = events.map(e => {
+        if (e.id === id) {
+          return {
+            ...e,
+            waitlist: [...e.waitlist, { userId: 'current-user', timestamp: new Date() }]
+          };
+        }
+        return e;
+      });
+      setEvents(updatedEvents);
+      
       toast({
-        title: "Event is Full",
-        description: "This event has reached its capacity. Would you like to join the waitlist?",
-        variant: "destructive",
+        title: "Added to Waitlist",
+        description: "You'll be notified if a spot becomes available.",
+        variant: "default",
       });
     } else {
+      // Register for event
+      const updatedEvents = events.map(e => {
+        if (e.id === id) {
+          return {
+            ...e,
+            registered: e.registered + 1
+          };
+        }
+        return e;
+      });
+      setEvents(updatedEvents);
+      
       toast({
-        title: "Coming Soon!",
-        description: "Event registration will be implemented in the next update.",
+        title: "Registration Successful!",
+        description: "You have been registered for the event.",
+        variant: "default",
       });
     }
   };
@@ -100,6 +133,8 @@ export const FeaturedEvents = () => {
               location={event.location}
               imageUrl={event.imageUrl}
               category={event.category}
+              capacity={event.capacity}
+              registered={event.registered}
               onClick={() => handleEventClick(event.id)}
             />
           ))}

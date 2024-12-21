@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, Star, Share2, BookOpen } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { databases, DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
+import { Models } from 'appwrite';
 
 interface Achievement {
   id: string;
@@ -43,7 +44,17 @@ export const UserAchievements = () => {
         COLLECTIONS.ACHIEVEMENTS,
         [/* Add your queries here */]
       );
-      setAchievements(response.documents as Achievement[]);
+      
+      // Transform the Appwrite documents into Achievement type
+      const transformedAchievements: Achievement[] = response.documents.map((doc: Models.Document) => ({
+        id: doc.$id,
+        name: doc.name as string,
+        description: doc.description as string,
+        icon: doc.icon as string,
+        points: doc.points as number,
+      }));
+      
+      setAchievements(transformedAchievements);
     } catch (error) {
       console.error('Error fetching achievements:', error);
     }
@@ -56,7 +67,15 @@ export const UserAchievements = () => {
         COLLECTIONS.USER_POINTS,
         user?.$id || ''
       );
-      setUserPoints(response as UserPoints);
+      
+      // Transform the Appwrite document into UserPoints type
+      const transformedPoints: UserPoints = {
+        total: response.total as number,
+        level: response.level as number,
+        nextLevelPoints: response.nextLevelPoints as number,
+      };
+      
+      setUserPoints(transformedPoints);
     } catch (error) {
       console.error('Error fetching user points:', error);
     }

@@ -78,10 +78,37 @@ export default {
             transform: "translateY(0)",
           },
         },
+        "slide-in": {
+          "0%": {
+            transform: "translateX(-100%)",
+          },
+          "100%": {
+            transform: "translateX(0)",
+          },
+        },
+        "card-flip": {
+          "0%": {
+            transform: "rotateY(0deg)",
+          },
+          "100%": {
+            transform: "rotateY(180deg)",
+          },
+        },
+        "scale-up": {
+          "0%": {
+            transform: "scale(1)",
+          },
+          "100%": {
+            transform: "scale(1.05)",
+          },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.5s ease-out",
         "fade-down": "fade-down 0.5s ease-out",
+        "slide-in": "slide-in 0.5s ease-out",
+        "card-flip": "card-flip 0.6s ease-in-out",
+        "scale-up": "scale-up 0.3s ease-out",
       },
     },
   },

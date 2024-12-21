@@ -42,45 +42,6 @@ export const createOAuthSession = async () => {
     }
 };
 
-// Helper functions for database operations
-export const createDocument = async (
-    collectionId: string,
-    data: any,
-    permissions: string[] = []
-) => {
-    return await databases.createDocument(
-        DATABASE_ID,
-        collectionId,
-        ID.unique(),
-        data,
-        permissions
-    );
-};
-
-export const listDocuments = async (collectionId: string, queries: string[] = []) => {
-    return await databases.listDocuments(
-        DATABASE_ID,
-        collectionId,
-        queries
-    );
-};
-
-// Helper functions for file storage
-export const uploadFile = async (file: File) => {
-    return await storage.createFile(
-        'YOUR_BUCKET_ID',
-        ID.unique(),
-        file
-    );
-};
-
-export const getFilePreview = (fileId: string) => {
-    return storage.getFilePreview(
-        'YOUR_BUCKET_ID',
-        fileId
-    );
-};
-
 // Types for our data models
 export interface Event {
     id: string;
@@ -130,3 +91,42 @@ export interface UserPoints {
     level: number;
     nextLevelPoints: number;
 }
+
+// Helper functions for database operations
+export const createDocument = async (
+    collectionId: string,
+    data: any,
+    permissions: string[] = []
+) => {
+    return await databases.createDocument(
+        DATABASE_ID,
+        collectionId,
+        ID.unique(),
+        data,
+        permissions
+    );
+};
+
+export const listDocuments = async (collectionId: string, queries: string[] = []) => {
+    return await databases.listDocuments(
+        DATABASE_ID,
+        collectionId,
+        queries
+    );
+};
+
+// Helper functions for file storage
+export const uploadFile = async (file: File) => {
+    return await storage.createFile(
+        'YOUR_BUCKET_ID',
+        ID.unique(),
+        file
+    );
+};
+
+export const getFilePreview = (fileId: string) => {
+    return storage.getFilePreview(
+        'YOUR_BUCKET_ID',
+        fileId
+    );
+};

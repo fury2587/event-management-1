@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { account, createOAuthSession, UserProfile, databases, DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
+import { account, createOAuthSession, databases, DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
 import { useToast } from "@/components/ui/use-toast";
 import { ID, Models } from 'appwrite';
 
 interface AuthContextType {
-  user: (Models.User & { profile?: UserProfile }) | null;
+  user: (Models.User<Models.Preferences> & { profile?: UserProfile }) | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
@@ -15,7 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<(Models.User & { profile?: UserProfile }) | null>(null);
+  const [user, setUser] = useState<(Models.User<Models.Preferences> & { profile?: UserProfile }) | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -28,7 +28,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           `userId=${userId}`
         ]
       );
-      return response.documents[0] as UserProfile;
+      const document = response.documents[0];
+      if (!document) return null;
+      
+      return {
+        id: document.$id,
+        userId: document.userId,
+        name: document.name,
+        email: document.email,
+        points: document.points,
+        achievements: document.achievements,
+        avatar: document.avatar,
+        bio: document.bio
+      } as UserProfile;
     } catch (error) {
       console.error('Error fetching user profile:', error);
       return null;

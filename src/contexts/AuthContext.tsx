@@ -1,17 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { account } from '@/lib/appwrite';
+import { account, createOAuthSession, UserProfile, databases, DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
 import { useToast } from "@/components/ui/use-toast";
-import { ID } from 'appwrite';
-
-interface User {
-  $id: string;
-  name: string;
-  email: string;
-  profilePic?: string;
-}
+import { ID, Models } from 'appwrite';
 
 interface AuthContextType {
-  user: User | null;
+  user: (Models.User & { profile?: UserProfile }) | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
@@ -22,9 +15,45 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<(Models.User & { profile?: UserProfile }) | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        COLLECTIONS.USER_PROFILES,
+        [
+          `userId=${userId}`
+        ]
+      );
+      return response.documents[0] as UserProfile;
+    } catch (error) {
+      console.error('Error fetching user profile:', error);
+      return null;
+    }
+  };
+
+  const createUserProfile = async (userId: string, name: string, email: string) => {
+    try {
+      return await databases.createDocument(
+        DATABASE_ID,
+        COLLECTIONS.USER_PROFILES,
+        ID.unique(),
+        {
+          userId,
+          name,
+          email,
+          points: 0,
+          achievements: []
+        }
+      );
+    } catch (error) {
+      console.error('Error creating user profile:', error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     checkUser();
@@ -33,7 +62,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const checkUser = async () => {
     try {
       const session = await account.get();
-      setUser(session);
+      if (session) {
+        const profile = await fetchUserProfile(session.$id);
+        setUser({ ...session, profile });
+      }
     } catch (error) {
       setUser(null);
     } finally {
@@ -61,7 +93,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
-      await account.create(ID.unique(), email, password, name);
+      const newUser = await account.create(ID.unique(), email, password, name);
+      await createUserProfile(newUser.$id, name, email);
       await signIn(email, password);
       toast({
         title: "Success",
@@ -97,13 +130,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const googleSignIn = async () => {
     try {
-      const currentLocation = window.location.href;
-      await account.createOAuth2Session(
-        'google',
-        currentLocation,
-        `${currentLocation}?error=auth-failed`,
-        ['profile', 'email']
-      );
+      await createOAuthSession();
+      await checkUser();
     } catch (error) {
       toast({
         title: "Error",

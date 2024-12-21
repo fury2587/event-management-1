@@ -1,6 +1,7 @@
 import { Hero } from "@/components/Hero";
 import { FeaturedEvents } from "@/components/FeaturedEvents";
 import { AuthForm } from "@/components/AuthForm";
+import { UserDashboard } from "@/components/UserDashboard";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
@@ -14,7 +15,12 @@ const Index = () => {
           <AuthForm />
         </div>
       ) : (
-        <FeaturedEvents />
+        <>
+          <UserDashboard />
+          <div className="mt-8">
+            <FeaturedEvents />
+          </div>
+        </>
       )}
     </div>
   );

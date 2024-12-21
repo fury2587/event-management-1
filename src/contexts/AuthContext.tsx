@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { account } from '@/lib/appwrite';
 import { useToast } from "@/components/ui/use-toast";
+import { ID } from 'appwrite';
 
 interface User {
   $id: string;
@@ -60,7 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, name: string) => {
     try {
-      await account.create('unique()', email, password, name);
+      await account.create(ID.unique(), email, password, name);
       await signIn(email, password);
       toast({
         title: "Success",
@@ -96,9 +97,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const googleSignIn = async () => {
     try {
-      account.createOAuth2Session('google', 
-        'http://localhost:5173/auth-callback', // Success URL
-        'http://localhost:5173/auth-callback', // Failure URL
+      const currentLocation = window.location.href;
+      await account.createOAuth2Session(
+        'google',
+        currentLocation,
+        `${currentLocation}?error=auth-failed`,
+        ['profile', 'email']
       );
     } catch (error) {
       toast({

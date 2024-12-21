@@ -3,8 +3,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Settings, User } from "lucide-react";
+import { CalendarDays, Settings, User, Trophy } from "lucide-react";
 import { EventCard } from "./EventCard";
+import { UserAchievements } from "./UserAchievements";
 
 export const UserDashboard = () => {
   const { user, signOut } = useAuth();
@@ -40,7 +41,7 @@ export const UserDashboard = () => {
       </div>
 
       <Tabs defaultValue="upcoming" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+        <TabsList className="grid w-full grid-cols-4 lg:w-[500px]">
           <TabsTrigger value="upcoming">
             <CalendarDays className="mr-2 h-4 w-4" />
             Upcoming
@@ -48,6 +49,10 @@ export const UserDashboard = () => {
           <TabsTrigger value="past">
             <CalendarDays className="mr-2 h-4 w-4" />
             Past
+          </TabsTrigger>
+          <TabsTrigger value="achievements">
+            <Trophy className="mr-2 h-4 w-4" />
+            Rewards
           </TabsTrigger>
           <TabsTrigger value="profile">
             <User className="mr-2 h-4 w-4" />
@@ -103,6 +108,10 @@ export const UserDashboard = () => {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="achievements" className="space-y-4">
+          <UserAchievements />
         </TabsContent>
 
         <TabsContent value="profile" className="space-y-4">

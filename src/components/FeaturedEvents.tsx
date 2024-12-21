@@ -2,6 +2,7 @@ import { useState } from "react";
 import { EventCard } from "./EventCard";
 import { useToast } from "@/components/ui/use-toast";
 import { CategoryFilter } from "./CategoryFilter";
+import { useAuth } from "@/contexts/AuthContext";
 
 const SAMPLE_EVENTS = [
   {
@@ -65,16 +66,40 @@ const CATEGORIES = Array.from(new Set(SAMPLE_EVENTS.map(event => event.category)
 
 export const FeaturedEvents = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [events, setEvents] = useState(SAMPLE_EVENTS);
+  const [events, setEvents] = useState(SAMPLE_EVENTS.map(event => ({
+    ...event,
+    registeredUsers: [],
+    waitlistUsers: []
+  })));
 
   const filteredEvents = selectedCategory
     ? events.filter(event => event.category === selectedCategory)
     : events;
 
   const handleEventClick = (id: number) => {
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be signed in to register for events.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const event = events.find(e => e.id === id);
     if (!event) return;
+
+    // Check if user is already registered
+    if (event.registeredUsers.includes(user.$id)) {
+      toast({
+        title: "Already Registered",
+        description: "You are already registered for this event.",
+        variant: "default",
+      });
+      return;
+    }
 
     if (event.registered >= event.capacity) {
       // Add to waitlist
@@ -82,7 +107,7 @@ export const FeaturedEvents = () => {
         if (e.id === id) {
           return {
             ...e,
-            waitlist: [...e.waitlist, { userId: 'current-user', timestamp: new Date() }]
+            waitlistUsers: [...e.waitlistUsers, user.$id]
           };
         }
         return e;
@@ -100,7 +125,8 @@ export const FeaturedEvents = () => {
         if (e.id === id) {
           return {
             ...e,
-            registered: e.registered + 1
+            registered: e.registered + 1,
+            registeredUsers: [...e.registeredUsers, user.$id]
           };
         }
         return e;
@@ -135,6 +161,7 @@ export const FeaturedEvents = () => {
               category={event.category}
               capacity={event.capacity}
               registered={event.registered}
+              isRegistered={user ? event.registeredUsers.includes(user.$id) : false}
               onClick={() => handleEventClick(event.id)}
             />
           ))}

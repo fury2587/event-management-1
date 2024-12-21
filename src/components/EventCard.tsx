@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MapPin, Users } from "lucide-react";
+import { CalendarDays, MapPin, Users, Check } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface EventCardProps {
@@ -11,6 +11,7 @@ interface EventCardProps {
   category: string;
   capacity: number;
   registered: number;
+  isRegistered: boolean;
   onClick: () => void;
 }
 
@@ -22,6 +23,7 @@ export const EventCard = ({
   category, 
   capacity,
   registered,
+  isRegistered,
   onClick 
 }: EventCardProps) => {
   const isFull = registered >= capacity;
@@ -65,13 +67,20 @@ export const EventCard = ({
         </div>
       </CardContent>
       <CardFooter>
-        <Button 
-          onClick={onClick} 
-          className="w-full" 
-          variant={isFull ? "outline" : "default"}
-        >
-          {isFull ? "Join Waitlist" : "Register Now"}
-        </Button>
+        {isRegistered ? (
+          <Button variant="secondary" className="w-full" disabled>
+            <Check className="w-4 h-4 mr-2" />
+            Registered
+          </Button>
+        ) : (
+          <Button 
+            onClick={onClick} 
+            className="w-full" 
+            variant={isFull ? "outline" : "default"}
+          >
+            {isFull ? "Join Waitlist" : "Register Now"}
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

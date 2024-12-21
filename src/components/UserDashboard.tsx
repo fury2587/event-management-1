@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, Settings, User } from "lucide-react";
+import { EventCard } from "./EventCard";
 
 export const UserDashboard = () => {
   const { user, signOut } = useAuth();
@@ -15,6 +16,10 @@ export const UserDashboard = () => {
       .join("")
       .toUpperCase();
   };
+
+  // In a real app, these would be fetched from an API
+  const upcomingEvents = [];
+  const pastEvents = [];
 
   return (
     <div className="container mx-auto p-6 space-y-8 animate-fade-up">
@@ -57,7 +62,20 @@ export const UserDashboard = () => {
               <CardDescription>Events you're registered for</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">No upcoming events</p>
+              {upcomingEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {upcomingEvents.map((event) => (
+                    <EventCard
+                      key={event.id}
+                      {...event}
+                      isRegistered={true}
+                      onClick={() => {}}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">No upcoming events</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -69,7 +87,20 @@ export const UserDashboard = () => {
               <CardDescription>Events you've attended</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">No past events</p>
+              {pastEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {pastEvents.map((event) => (
+                    <EventCard
+                      key={event.id}
+                      {...event}
+                      isRegistered={true}
+                      onClick={() => {}}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground">No past events</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

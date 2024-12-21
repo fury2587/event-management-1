@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
-import { Google } from "lucide-react";
+import { LogIn } from "lucide-react";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -90,7 +90,7 @@ export const AuthForm = () => {
         className="w-full"
         onClick={googleSignIn}
       >
-        <Google className="mr-2 h-4 w-4" />
+        <LogIn className="mr-2 h-4 w-4" />
         Google
       </Button>
 

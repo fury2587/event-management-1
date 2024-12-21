@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
 import { account, createOAuthSession, databases, DATABASE_ID, COLLECTIONS } from '@/lib/appwrite';
 import { useToast } from "@/components/ui/use-toast";
 import { ID, Models } from 'appwrite';
+import type { UserProfile } from '@/lib/appwrite';
 
 interface AuthContextType {
   user: (Models.User<Models.Preferences> & { profile?: UserProfile }) | null;

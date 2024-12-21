@@ -27,7 +27,7 @@ export const UserDashboard = () => {
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={user?.profilePic} />
+            <AvatarImage src={user?.profile?.avatar} />
             <AvatarFallback>{user?.name ? getInitials(user.name) : "U"}</AvatarFallback>
           </Avatar>
           <div>
